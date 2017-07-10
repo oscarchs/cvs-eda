@@ -20,7 +20,9 @@ master_v7->master_v8
 
 master_v8->master_v9
 
-master_v5->devel_v0
+master_v9->master_v10
+master_v10 [style=dotted]
+master_v4->devel_v0
 
 devel_v0->devel_v1
 
@@ -31,14 +33,10 @@ devel_v2->devel_v3
 devel_v3->devel_v4
 
 devel_v4->devel_v5
-
-devel_v5->devel_v6
-
-devel_v6->devel_v7
-
-devel_v7->master_v9
-
-devel_v6->testing1_v0
+devel_v5 [style=dotted]
+devel_v5->master_v10
+devel_v5 [style=dotted] master_v10 [style=dotted]
+devel_v4->testing1_v0
 
 testing1_v0->testing1_v1
 
@@ -48,19 +46,17 @@ testing1_v2->testing1_v3
 
 testing1_v3->testing1_v4
 
-testing1_v4->testing1_v5
+testing1_v4->testing1_v6
 
-testing1_v5->testing1_v6
+testing1_v6->testing1_v7
 
-testing1_v5->testing1_v6_old
-
-testing1_v6_old->testing1_v7
-
-testing1_v7->devel_v7
-
-devel_v7->master_v9
-
-devel_v6->testing2_v0
+testing1_v3->testing1_v4_old
+testing1_v4_old [style=dotted]
+testing1_v4_old->devel_v5
+testing1_v4_old [style=dotted] devel_v5 [style=dotted]
+devel_v5->master_v10
+devel_v5 [style=dotted] master_v10 [style=dotted]
+devel_v4->testing2_v0
 
 testing2_v0->testing2_v1
 
@@ -74,12 +70,14 @@ testing2_v4->testing2_v5
 
 testing2_v5->testing2_v6
 
-testing2_v6->testing1_v7
+testing2_v6->testing1_v4_old
+testing1_v4_old [style=dotted]
+testing1_v4_old->devel_v5
+testing1_v4_old [style=dotted] devel_v5 [style=dotted]
+devel_v5->master_v10
+devel_v5 [style=dotted] master_v10 [style=dotted]
+testing2_v6->testing1_v6
 
-testing1_v7->devel_v7
+testing1_v6->testing1_v7
 
-devel_v7->master_v9
-
-devel_v5->devel_v6_old
-devel_v6_old [style=dotted]
 }

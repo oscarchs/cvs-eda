@@ -20,7 +20,8 @@ struct Branch{
 	Branch(StateNode * origin, string name);
 	void Merge(Branch ** &other_branch);
 
-	void NewState(string name); // a new version from current state 
+	void NewState(string name); // a new version from current state
+	void NewStateP(string name); // a new version from current state 
 	void AddState(StateNode * new_state);// add an existing state
 	bool FindState(string x, StateNode ** &tmp);
 	void UpdateCurrentState();
@@ -44,8 +45,6 @@ Branch::Branch(string name){
 	File * n = new File("files/",name + "_file.txt");
 	files.push_back(n);
 	this->name = name;
-//	ofstream fl (name+"_file.txt");
-//	fl << current_state->name;
 }
 
 Branch::Branch(StateNode * origin, string name){
@@ -65,7 +64,14 @@ void Branch::NewState(string name){
 	StateNode * new_state = new StateNode(current_state,name);
 	new_state->modification = name;
 	current_state = new_state;
+}
 
+void Branch::NewStateP(string name){
+	StateNode * new_state = new StateNode(current_state,name);
+	new_state->modification = name;
+	current_state->m.lock();
+	current_state = new_state;
+	current_state->m.unlock();
 }
 
 bool Branch::FindState(string x, StateNode ** &tmp){
@@ -80,9 +86,6 @@ bool Branch::FindState(string x, StateNode ** &tmp){
 
 void Branch::Merge(Branch ** &other_branch){
 	current_state->origin.push_back((*other_branch)->current_state);
-	//cout << current_state->name<<endl;
-	//cout << (*other_branch)->current_state->name;
-	//other_branch->current_state = this->current_state;
 	(*other_branch)->AddState(current_state);
 }
 void Branch::NewVersion(){

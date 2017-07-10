@@ -6,6 +6,7 @@
 #include <vector>
 #include <map>
 #include <stack>
+#include <mutex>
 using namespace std;
 
 struct StateNode{
@@ -13,6 +14,7 @@ struct StateNode{
 	vector< StateNode* > origin;
 	vector< StateNode* > descendant;
 	string modification;
+	mutex m;
 
 	StateNode();
 	StateNode(StateNode * source,string name);

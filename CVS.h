@@ -8,19 +8,20 @@
 #include <string>
 #include <fstream>
 #include <dirent.h>
+#include <thread>
 
 struct CVS{
 	string name;
 	vector < Branch * > branches;
 	int current_branch;
 	StateNode * init;
-
+	mutex m;
 	CVS(string name);
 	void NewBranch(string name);
 	void NewBranch(string statename, string branchname);
 	bool FindState(string x,StateNode ** &tmp);
 	void FindState2(string x,StateNode ** tmp, StateNode ** &tmp2);
-	void DeleteBranch(string name);  // name can only be an initial branch state
+	void DeleteBranch(string name);  
 	void DeleteState(StateNode ** tmp);
 	void RestoreState(StateNode ** tmp);
 
@@ -132,9 +133,7 @@ void CVS::Restore(string state){
 	else{
 		RestoreState(tmp2);
 		UpdateBranches();
-	}
-//		FindState(state,tmp2);
-//		cout << (*tmp2)->name;
+	}			
 
 }
 void CVS::RestoreState(StateNode ** tmp){

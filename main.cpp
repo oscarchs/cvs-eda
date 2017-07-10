@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <string>
 #include <iostream>
+#include <thread>
 using namespace std;
 
 void run(CVS * &project){
@@ -149,6 +150,12 @@ void run(CVS * &project){
 	}
 }
 
+void doInser(CVS * &project){
+	project->m.lock();
+	project->branches[project->current_branch]->NewVersion();
+	project->m.unlock();
+}
+
 int main(int argc, char* argv[]){
 	
 	CVS * project = new CVS("project");
@@ -156,18 +163,19 @@ int main(int argc, char* argv[]){
 	project->branches[project->current_branch]->NewVersion();
 	project->branches[project->current_branch]->NewVersion();
 	project->branches[project->current_branch]->NewVersion();
-	project->branches[project->current_branch]->NewVersion();
 
-	project->NewBranch("master_v5","devel");
+	project->NewBranch("master_v4","devel");
 
 	project->branches[project->current_branch]->NewVersion();
 	project->branches[project->current_branch]->NewVersion();
 	project->branches[project->current_branch]->NewVersion();
+	thread th1(doInser,ref(project));
+	thread th2(doInser,ref(project));
+  	th1.join();
+  	th2.join();
 	
 	project->CheckOut("devel");
 
-	project->branches[project->current_branch]->NewVersion();
-	project->branches[project->current_branch]->NewVersion();
 	project->branches[project->current_branch]->NewVersion();
 	project->branches[project->current_branch]->NewVersion();
 	project->branches[project->current_branch]->NewVersion();
@@ -177,9 +185,6 @@ int main(int argc, char* argv[]){
 	project->NewBranch("testing2");	
 	
 	project->CheckOut("testing1");	
-	project->branches[project->current_branch]->NewVersion();
-	project->branches[project->current_branch]->NewVersion();
-	project->branches[project->current_branch]->NewVersion();
 	project->branches[project->current_branch]->NewVersion();
 	project->branches[project->current_branch]->NewVersion();
 	project->branches[project->current_branch]->NewVersion();
@@ -201,14 +206,9 @@ int main(int argc, char* argv[]){
     project->MergeBranch("devel");
 
 
-	project->Delete("testing1_v6");
-	project->CheckOut("testing1");
 
 
-	project->branches[project->current_branch]->NewVersion();
-	cout << endl<< project->branches[project->current_branch]->current_state->origin[0]->descendant[0]->name;
 
-	project->GenDot2();
 	system("dot graph.dot -o graph.png -Tpng");
 
 	//project->Restore("testing1_v6");
