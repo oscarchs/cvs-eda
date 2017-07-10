@@ -78,7 +78,7 @@ void CVS::Delete(string state){
 	if( FindState(state,tmp) ){
 		//branches[current_branch]->current_state = (*tmp)->origin[0];
 		DeleteState(tmp);
-		//UpdateBranches();
+		UpdateBranches();
 	}
 }
 void CVS::Restore(string state){
@@ -113,19 +113,10 @@ void CVS::RestoreState(StateNode ** tmp){
 }
 
 void CVS::UpdateBranches(){
-	for(int i=0; i<branches.size(); i++){
-		StateNode ** tmp;
-		tmp = &branches[current_branch]->current_state;
-		while(!(*tmp)->active){
-			if(!(*tmp)){
-				break;
-			}
-			tmp = &(*tmp)->origin[0];
-		}
-		branches[i]->current_state = (*tmp);
+	StateNode ** tmp;
+	for(int i=0; i< branches.size(); i++){
+		branches[i]->UpdateCurrentState();
 	}
-
-
 }
 void CVS::CheckOut(string branchname){
 	for(int i=0; i< branches.size(); i++){
@@ -195,8 +186,7 @@ void CVS::routes(StateNode ** tmp,string &data){
 
 	for(int i=0;i<(*tmp)->descendant.size();i++){
 		if((*tmp)->descendant[i] != NULL){
-			data += (*tmp)->name + "->" +(*tmp)->descendant[i]->name +'\n';
-			
+			data += (*tmp)->name + "->" +(*tmp)->descendant[i]->name +'\n';	
 			if (!(*tmp)->active){
 			data += (*tmp)->name + " [style=dotted] ";
 			}
@@ -204,8 +194,8 @@ void CVS::routes(StateNode ** tmp,string &data){
 			data += (*tmp)->descendant[i]->name + " [style=dotted]";
 			}
 			data += "\n";
+			routes(&(*tmp)->descendant[i],data);
 		}
-		routes(&(*tmp)->descendant[i],data);
 	}
 }
 

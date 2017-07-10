@@ -11,6 +11,7 @@ struct Branch{
 
 	StateNode * origin; // si es null entonces es branch master
 	StateNode * current_state; 
+	StateNode * init_state;
 	string name;
 	vector<File*> files;
 
@@ -22,6 +23,8 @@ struct Branch{
 	void NewState(string name); // a new version from current state 
 	void AddState(StateNode * new_state);// add an existing state
 	bool FindState(string x, StateNode ** &tmp);
+	void UpdateCurrentState();
+	
 	string GetStatesInfo();
 
 	void NewVersion();
@@ -34,6 +37,7 @@ Branch::Branch(string name){
 	origin = NULL;
 	current_state = new StateNode();
 	current_state->initial = 1;
+	init_state = current_state;
 	current_state->name = name+"_v"+to_string(count_v);
 	current_state->modification = name+"_v"+to_string(count_v);
 	count_v+=1;
@@ -46,12 +50,14 @@ Branch::Branch(string name){
 
 Branch::Branch(StateNode * origin, string name){
 	this->origin = origin;
-	current_state = new StateNode(origin,name+"_v"+to_string(count_v));
+	current_state = new StateNode();//StateNode(origin,name+"_v"+to_string(count_v));
+	current_state->StateNodeB(origin,name+"_v"+to_string(count_v));
 	current_state->modification = name+"_v"+to_string(count_v);
 	File * n = new File("files/",name + "_file.txt");
 	files.push_back(n);
 	count_v +=1;
 	current_state->initial = 1;
+	init_state = current_state;
 	this->name = name;
 }
 
@@ -89,6 +95,19 @@ void Branch::AddState(StateNode * new_state){
 	this->current_state->descendant.push_back(new_state);
 	this->current_state = new_state;
 
+}
+
+void Branch::UpdateCurrentState(){
+	StateNode ** tmp;
+	tmp = &init_state;
+	while((*tmp)){
+		cout << (*tmp)->name;
+		if(!(*tmp)->descendant[0] || !(*tmp)->descendant[0]->active){
+			break;	
+		}
+		tmp = &(*tmp)->descendant[0];
+	}
+	current_state = *tmp;
 }
 
 void Branch::UpdateFile(){

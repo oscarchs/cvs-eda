@@ -56,6 +56,16 @@ void run(CVS * &project){
 				cout << "branch recibe 2 parametros\n";
 			}
 		}
+
+		else if(splitter[0] == "merge"){
+			if(splitter.size() != 2){
+				cout << "merge recibe 2 parametros\n";
+			}
+			else{
+				project->MergeBranch(splitter[1]);
+			}
+		}
+
 		else if(splitter[0] == "newversion"){
 			if(splitter.size() == 1){
 				project->branches[project->current_branch]->NewVersion();
@@ -132,6 +142,9 @@ void run(CVS * &project){
 			cout <<splitter[0]<< " is not a valid command\n";
 		}
 
+		project->GenDot2();
+		system("dot graph.dot -o graph.png -Tpng");
+
 
 	}
 }
@@ -186,15 +199,15 @@ int main(int argc, char* argv[]){
 	project->MergeBranch("testing1");
 	project->CheckOut("master");
     project->MergeBranch("devel");
-    project->branches[project->current_branch]->UpdateFile();
+
+
+	project->Delete("testing1_v6");
 	project->GenDot2();
-	project->Delete("testing2_v6");
-
-	project->CheckOut("testing2");
-	cout << project->branches[project->current_branch]->current_state->origin[1]->active;
-	project->GenDot2();
+	project->CheckOut("testing1");
 
 
+	project->branches[project->current_branch]->NewVersion();
+	cout << endl<< project->branches[project->current_branch]->current_state->origin[0]->descendant[0]->name;
 	system("dot graph.dot -o graph.png -Tpng");
 
 
