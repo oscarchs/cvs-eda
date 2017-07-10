@@ -19,6 +19,7 @@ struct CVS{
 	void NewBranch(string name);
 	void NewBranch(string statename, string branchname);
 	bool FindState(string x,StateNode ** &tmp);
+	void FindState2(string x,StateNode ** tmp, StateNode ** &tmp2);
 	void DeleteBranch(string name);  // name can only be an initial branch state
 	void DeleteState(StateNode ** tmp);
 	void RestoreState(StateNode ** tmp);
@@ -73,6 +74,19 @@ bool CVS::FindState(string x,StateNode ** &tmp){
 	return 0;
 }
 
+void CVS::FindState2(string x,StateNode ** tmp, StateNode ** &tmp2){
+	if(!(*tmp)){
+		return;
+	}
+	if( (*tmp)->name  == x){
+		tmp2 = tmp;
+		return;
+	}
+	for(int i=0; i < (*tmp)->descendant.size();i++){
+			FindState2(x,&(*tmp)->descendant[i],tmp2);
+		}
+}
+
 void CVS::Delete(string state){
 	StateNode ** tmp;
 	if( FindState(state,tmp) ){
@@ -80,15 +94,6 @@ void CVS::Delete(string state){
 		DeleteState(tmp);
 		UpdateBranches();
 	}
-}
-void CVS::Restore(string state){
-	StateNode ** tmp;
-	StateNode ** tmp2;
-	if( FindState(state,tmp) ){
-		RestoreState(tmp);
-	}
-		FindState(state,tmp2);
-		cout << (*tmp2)->name;
 }
 void CVS::DeleteState(StateNode ** tmp){
 	if(!(*tmp)){
@@ -101,11 +106,41 @@ void CVS::DeleteState(StateNode ** tmp){
 	}
 }
 
+void CVS::Restore(string state){
+	StateNode ** tmp;
+	tmp = &init;
+	StateNode ** tmp2;
+	int index_acc;
+	FindState2(state,tmp,tmp2);
+	if((*tmp2)->old){
+		cout << "handle this";
+		tmp2 = &(*tmp2)->origin[0];
+		DeleteState(&(*tmp2)->descendant[0]);
+		for(int i=0; i< (*tmp2)->descendant.size(); i++){
+			if((*tmp2)->descendant[i]->name == state){
+				index_acc = i;
+			}
+		}
+		swap((*tmp2)->descendant[0],(*tmp2)->descendant[index_acc]);
+		RestoreState(&(*tmp2)->descendant[0]);
+		(*tmp2)->descendant[0]->name.erase((*tmp2)->descendant[0]->name.end()-4,(*tmp2)->descendant[0]->name.end());
+		(*tmp2)->descendant[index_acc]->name +="_old";
+		(*tmp2)->descendant[index_acc]->old =1;
+		(*tmp2)->descendant[0]->old = 0;
+		UpdateBranches();
+	}
+	else{
+		RestoreState(tmp2);
+		UpdateBranches();
+	}
+//		FindState(state,tmp2);
+//		cout << (*tmp2)->name;
+
+}
 void CVS::RestoreState(StateNode ** tmp){
 	if(!(*tmp)){
 		return;
 	}
-	//cout << (*tmp)->name <<endl;
 	(*tmp)->active = 1;
 	for(int i=0; i < (*tmp)->descendant.size();i++){
 		RestoreState(&(*tmp)->descendant[i]);

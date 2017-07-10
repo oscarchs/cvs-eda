@@ -202,14 +202,16 @@ int main(int argc, char* argv[]){
 
 
 	project->Delete("testing1_v6");
-	project->GenDot2();
 	project->CheckOut("testing1");
 
 
 	project->branches[project->current_branch]->NewVersion();
 	cout << endl<< project->branches[project->current_branch]->current_state->origin[0]->descendant[0]->name;
+
+	project->GenDot2();
 	system("dot graph.dot -o graph.png -Tpng");
 
+	//project->Restore("testing1_v6");
 
 	run(project);
 
